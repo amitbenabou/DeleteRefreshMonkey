@@ -39,8 +39,22 @@ namespace DeleeRefreshMonkey.ViewModels
             this.Monkeys = new ObservableCollection<Monkey>(list);
         }
 
-        public ICommand DeleteCommand => new Command<Monkey>(RemoveMonkey);
 
+        private Object selectedMonkey;
+        public Object SelectedMonkey
+        {
+            get
+            {
+                return this.selectedMonkey;
+            }
+            set
+            {
+                this.selectedMonkey = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand DeleteCommand => new Command<Monkey>(RemoveMonkey);
         void RemoveMonkey(Monkey st)
         {
             if (Monkeys.Contains(st))
@@ -71,6 +85,21 @@ namespace DeleeRefreshMonkey.ViewModels
             {
                 this.isRefreshing = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public ICommand SingleSelectCommand => new Command(OnSingleSelectMonkey);
+        async void OnSingleSelectMonkey()
+        {
+            if (SelectedMonkey != null)
+            {
+                var navParam = new Dictionary<string, object>()
+            {
+                { "selectedMonkey",SelectedMonkey}
+            };
+                await Shell.Current.GoToAsync($"monkeyDetails", navParam);
+
+                SelectedMonkey = null;
             }
         }
         #endregion
