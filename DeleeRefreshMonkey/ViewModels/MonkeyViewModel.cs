@@ -55,15 +55,64 @@ namespace DeleeRefreshMonkey.ViewModels
         }
 
         public ICommand DeleteCommand => new Command<Monkey>(RemoveMonkey);
-        void RemoveMonkey(Monkey st)
+        void RemoveMonkey(Monkey monkey)
         {
-            if (Monkeys.Contains(st))
+            if (Monkeys.Contains(monkey))
             {
-                Monkeys.Remove(st);
+                Monkeys.Remove(monkey);
+            }
+        }
+        private ObservableCollection<Location> locations;
+        public ObservableCollection<Location> Locations
+        {
+            get
+            {
+                return this.locations;
+            }
+            set
+            {
+                this.locations = value;
+                OnPropertyChanged();
             }
         }
 
-   
+        private Location selectedLocation;
+        public Location SelectedLocation
+        {
+            get
+            {
+                return this.selectedLocation;
+            }
+            set
+            {
+                this.selectedLocation = value;
+                OnPickerChanged();
+                OnPropertyChanged();
+            }
+        }
+
+
+        private void OnPickerChanged()
+        {
+            ReadMonkeys();
+            if (SelectedLocation != null)
+            {
+                List<Monkey> tobeRemoved = Monkeys.Where(s => s.Location != SelectedLocation.LocationName).ToList();
+                foreach (Monkey monkey in tobeRemoved)
+                {
+                    Monkeys.Remove(monkey);
+                }
+            }
+
+
+        }
+
+        private void FillMonths()
+        {
+            
+        }
+
+
         #region Refresh View
         public ICommand RefreshCommand => new Command(Refresh);
         private async void Refresh()
